@@ -1,28 +1,25 @@
 const express = require("express");
+require('dotenv').config();
 const router = express.Router();
 const paypal = require("@paypal/checkout-server-sdk");
 
-// PayPal sandbox credentials
+// Use Railway environment variables
 const environment = new paypal.core.SandboxEnvironment(
-  "ASr9vc6-Yl5MgUyrfA5LzpxC5sbQJZrrywgoA7Uc-KKcMZKlqN0l49jOteMRp56h4j4gyVn-PFIC8C_h",
-  "EGd9XPQTE9ohFx_BaEuyvwofj4F1Du5RyqqzaKziQ6tiZijFJtBUR0Fs4VHOB1WrlfiSsywCeon9u820"
+  process.env.PAYPAL_CLIENT_ID,
+  process.env.PAYPAL_CLIENT_SECRET
 );
 const client = new paypal.core.PayPalHttpClient(environment);
 
-// Create order with fixed amount in USD
 router.post("/create-order", async (req, res) => {
   try {
-    const USD_AMOUNT = "1.20"; // fixed amount in USD
+    const USD_AMOUNT = "1.20";
     const ITEM_NAME = "Food Order";
 
     const request = new paypal.orders.OrdersCreateRequest();
     request.requestBody({
       intent: "CAPTURE",
       purchase_units: [{
-        amount: {
-          currency_code: "USD",
-          value: USD_AMOUNT
-        },
+        amount: { currency_code: "USD", value: USD_AMOUNT },
         description: ITEM_NAME
       }],
       application_context: {
@@ -48,14 +45,7 @@ router.post("/create-order", async (req, res) => {
   }
 });
 
-// Success callback
-router.get("/success", (req, res) => {
-  res.send("Payment successful!");
-});
-
-// Cancel callback
-router.get("/cancel", (req, res) => {
-  res.send("Payment cancelled.");
-});
+router.get("/success", (req, res) => res.send("Payment successful!"));
+router.get("/cancel", (req, res) => res.send("Payment cancelled."));
 
 module.exports = router;
