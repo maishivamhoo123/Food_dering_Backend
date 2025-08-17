@@ -12,7 +12,7 @@ const Payment = require("./Router/Payment");
 const App = express();
 
 App.use(cors({
-  origin: "http://localhost:5173", // frontend URL
+  origin: "https://food-odering-frontend-kiom.vercel.app/", // frontend URL
   credentials: true
 }));
 
